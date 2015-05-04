@@ -38,8 +38,8 @@ x_train$time <- NULL
 x_train$status <- NULL
 y_train <- data.frame(matrix(ncol=2, nrow=327))
 colnames(y_train) <- c("time", "status")
-y_train$time <- train$time
-y_train$status <- train$status
+y_train$time <- train$time + 1
+y_train$status <- as.numeric(train$status)
 
 # Organizing testing data into x_test and y_test
 x_test <- test
@@ -47,9 +47,12 @@ x_test$time <- NULL
 x_test$status <- NULL
 y_test <- data.frame(matrix(ncol=2, nrow=82))
 colnames(y_test) <- c("time", "status")
-y_test$time <- test$time
-y_test$status <- test$status
+y_test$time <- test$time + 1
+y_test$status <- as.numeric(test$status)
 
+
+
+fit_nostd_cox = glmnet(data.matrix(x_train), data.matrix(y_train), standardize=FALSE, family="cox")
 #summary(x_train)
 #summary(y_train)
 #summary(x_test)
