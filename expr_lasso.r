@@ -76,13 +76,6 @@ pred_val = predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="li
 
 c_index = concordance.index(pred_val, surv.time = y_test$time, surv.event=y_test$status, method="noether")
 
-# Start outputting for results
-# sink('clinical_expr_lasso.txt')
-
-# Perform feature selection and model generation
-
-
-# Close output
-# sink()
-
-# Generate our graphs
+sink('expr.csv', type="output")
+write.csv(as.matrix(coef))
+sink()

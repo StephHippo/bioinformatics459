@@ -77,3 +77,7 @@ coef(cv_nostd_cox, s = "lambda.min")
 predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
 
 c_index = concordance.index(pred_val, surv.time = y_test$time, surv.event=y_test$status, method="noether")
+
+sink('clin.csv', type="output")
+write.csv(as.matrix(coef))
+sink()
