@@ -1,0 +1,17 @@
+---
+title: "C index"
+author: "Tian He"
+date: "Tuesday, May 05, 2015"
+output: html_document
+---
+```{r setup}
+setwd("C:/Users/Tian/Desktop/459 Final/R")
+brc <- read.csv("C:/Users/Tian/Desktop/459 Final/R/C index.csv")
+attach(C.index)
+```
+
+```{r compare}
+boxplot(CI ~ Data, main="C index for three kinds of models", col=c("red", "violet", "blue"), y="C index")
+
+detach(C.index)
+```

@@ -1,0 +1,166 @@
+---
+title: "feature 5"
+author: "Tian He"
+date: "Tuesday, May 05, 2015"
+output: html_document
+---
+```{r setup}
+setwd("C:/Users/Tian/Desktop/459 Final/R")
+brc <- read.csv("C:/Users/Tian/Desktop/459 Final/R/brc.csv")
+
+attach(brc)
+```
+
+```{r split}
+## set.seed(459)
+test.rows <- sample(1:nrow(brc), size=82, replace=FALSE)
+train <- brc[-test.rows,]
+test <- brc[test.rows,]
+
+summary(train)
+summary(test)
+
+dim(train)
+dim(test)
+
+```
+
+```{r pre-selection}
+detach(brc)
+attach(train)
+
+library(survival)
+
+status <- as.factor(vital_status)
+surv <-Surv(time, status=="Dead")
+
+getwd()
+N <- colnames(train)
+N
+sink(file="expr5.txt")
+
+for(i in 27:170) {
+    cfit <- try(coxph(surv ~ train[,i]),silent=T) 
+  if(class(cfit) == "coxph"){
+   expr <- list(name=N[i],cfit=cfit)
+   print(expr)}
+  
+}
+sink(NULL)
+
+
+
+getwd()
+N <- colnames(train)
+N
+sink(file="clinical5.txt")
+
+for(i in 3:26) {
+    cfit <- try(coxph(surv ~ train[,i]),silent=T) 
+  if(class(cfit) == "coxph"){
+   clin <- list(name=N[i],cfit=cfit)
+   print(clin)}
+  
+}
+sink(NULL)
+```
+
+
+```{r stepwise1}
+attach(train)
+
+library(survival)
+
+status <- as.factor(vital_status)
+surv1 <-Surv(time, status=="Dead")
+
+cfit1 <- coxph(surv1 ~ X14.3.3_epsilon + ACC_pS79 + Annexin_I + B.Raf + Bak + Bax + c.Kit + C.Raf + Collagen_VI + Dvl3 + E.Cadherin + EGFR_pY1068 + FOXO3a + GSK3.alpha.beta_pS21_S9 + HER2 + HER2_pY1248 + HER3 + HSP70 + K.Ras + Lck + mTOR + N.Cadherin + NF.kB.p65_pS536 + P.Cadherin + p70S6K + p90RSK_pT359_S363 + Paxillin + PCNA + Pea.15 + PI3K.p110.alpha + PKC.alpha + PRDX1 + Rb_pS807_S811 + RBM3 + Tuberin, data=train)
+summary(cfit1)
+
+step(cfit1)
+
+### C index 1
+
+detach(train)
+attach(test)
+
+
+status <- as.factor(vital_status)
+surv2 <- Surv(time, status=="Dead")
+
+cfit2 <- coxph(surv2 ~ EGFR_pY1068 + HER3 + Lck + NF.kB.p65_pS536 + Paxillin + PI3K.p110.alpha + RBM3, data = test)
+
+
+summary(cfit2)
+
+library(rms)
+dd <- datadist(EGFR_pY1068, HER3, Lck, NF.kB.p65_pS536, Paxillin, PI3K.p110.alpha, RBM3)
+options(datadist="test")
+
+m2 <- cph(surv2 ~ EGFR_pY1068 + HER3 + Lck + NF.kB.p65_pS536 + Paxillin + PI3K.p110.alpha + RBM3, x=TRUE, y=TRUE, data = test)
+m2
+
+detach(test)
+```
+
+```{r stepwise2}
+attach(train)
+
+status <- as.factor(vital_status)
+surv3 <-Surv(time, status=="Dead")
+
+cfit3 <- coxph(surv3 ~ patient_consent_status + age_at_diagnosis + ajcc_nodes_pathologic_pn + ajcc_metastasis_pathologic_pm + er_status_by_ihc + icd_o_3_site, data=train)
+summary(cfit3)
+
+step(cfit3)
+
+### C index 2
+detach(train)
+attach(test)
+
+library(survival)
+status <- as.factor(vital_status)
+surv4 <- Surv(time,status=="Dead")
+
+cfit4 <- coxph(surv4 ~ patient_consent_status + age_at_diagnosis + ajcc_metastasis_pathologic_pm + er_status_by_ihc, data = test)
+summary(cfit4)
+
+dd <- datadist(patient_consent_status, age_at_diagnosis, ajcc_metastasis_pathologic_pm, er_status_by_ihc)
+options(datadist="test")
+
+m4 <- cph(surv4 ~ patient_consent_status + age_at_diagnosis + ajcc_metastasis_pathologic_pm + er_status_by_ihc, data = test)
+m4
+```
+
+```{r combine}
+detach(test)
+attach(train)
+
+status <- vital_status
+surv5 <- Surv(time, status=="Dead")
+
+cfit5 <- coxph(surv5 ~ X14.3.3_epsilon + ACC_pS79 + Annexin_I + B.Raf + Bak + Bax + c.Kit + C.Raf + Collagen_VI + Dvl3 + E.Cadherin + EGFR_pY1068 + FOXO3a + GSK3.alpha.beta_pS21_S9 + HER2 + HER2_pY1248 + HER3 + HSP70 + K.Ras + Lck + mTOR + N.Cadherin + NF.kB.p65_pS536 + P.Cadherin + p70S6K + p90RSK_pT359_S363 + Paxillin + PCNA + Pea.15 + PI3K.p110.alpha + PKC.alpha + PRDX1 + Rb_pS807_S811 + RBM3 + Tuberin + patient_consent_status + age_at_diagnosis + ajcc_nodes_pathologic_pn + ajcc_metastasis_pathologic_pm + er_status_by_ihc + icd_o_3_site, data=train)
+summary(cfit5)
+
+step(cfit5)
+
+### C index 3
+detach(train)
+attach(test)
+
+status <- vital_status
+surv6 <- Surv(time, status=="Dead")
+
+cfit6 <- coxph(surv6 ~ X14.3.3_epsilon + ACC_pS79 + Annexin_I + B.Raf + Bak + Bax + c.Kit + C.Raf + Collagen_VI + Dvl3 + E.Cadherin + EGFR_pY1068 + FOXO3a + GSK3.alpha.beta_pS21_S9 + HER2 + HER2_pY1248 + HER3 + HSP70 + K.Ras + Lck + mTOR + N.Cadherin + NF.kB.p65_pS536 + P.Cadherin + p70S6K + p90RSK_pT359_S363 + Paxillin + PCNA + Pea.15 + PI3K.p110.alpha + PKC.alpha + PRDX1 + Rb_pS807_S811 + RBM3 + patient_consent_status + age_at_diagnosis + ajcc_nodes_pathologic_pn, data = test)
+summary(cfit6)
+
+dd <- datadist(X14.3.3_epsilon, ACC_pS79, Annexin_I, B.Raf, Bak, Bax, c.Kit, C.Raf, Collagen_VI, Dvl3, E.Cadherin, EGFR_pY1068, FOXO3a, GSK3.alpha.beta_pS21_S9, HER2, HER2_pY1248, HER3, HSP70, K.Ras, Lck, mTOR ,N.Cadherin, NF.kB.p65_pS536, P.Cadherin, p70S6K, p90RSK_pT359_S363, Paxillin, PCNA, Pea.15, PI3K.p110.alpha + PKC.alpha, PRDX1, Rb_pS807_S811, RBM3, patient_consent_status, age_at_diagnosis, ajcc_nodes_pathologic_pn)
+options(datadist="test")
+
+m6 <- cph(surv6 ~ X14.3.3_epsilon + ACC_pS79 + Annexin_I + B.Raf + Bak + Bax + c.Kit + C.Raf + Collagen_VI + Dvl3 + E.Cadherin + EGFR_pY1068 + FOXO3a + GSK3.alpha.beta_pS21_S9 + HER2 + HER2_pY1248 + HER3 + HSP70 + K.Ras + Lck + mTOR + N.Cadherin + NF.kB.p65_pS536 + P.Cadherin + p70S6K + p90RSK_pT359_S363 + Paxillin + PCNA + Pea.15 + PI3K.p110.alpha + PKC.alpha + PRDX1 + Rb_pS807_S811 + RBM3 + patient_consent_status + age_at_diagnosis + ajcc_nodes_pathologic_pn, data = test)
+m6
+```
+
+```{r finish}
+detach(test)
+```

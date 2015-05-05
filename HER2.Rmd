@@ -1,0 +1,32 @@
+---
+title: "HER2"
+author: "Tian He"
+date: "Tuesday, May 05, 2015"
+output: html_document
+---
+```{r setup}
+setwd("C:/Users/Tian/Desktop/459 Final/R")
+brc <- read.csv("C:/Users/Tian/Desktop/459 Final/R/brc.csv")
+
+attach(brc)
+```
+
+```{r plot}
+library(survival)
+
+status <- as.factor(vital_status)
+surv <-Surv(time, status=="Dead")
+
+HER2
+summary(HER2)
+
+her2 <- ifelse(HER2>0, 2, -2)
+her2
+summary(her2)
+
+fit3 <- survfit(surv ~ her2)
+print(fit3, print.rmean=TRUE)
+fit3
+plot(fit3, ylab="Survival Probability", xlab="Follow-up Time", main="Kaplan-Meier plot for HER2", col=c(1,2), lty=c(1,2))
+legend("bottomleft", legend=c("Down", "Up"), text.col=c(1,2), col=c(1,2), lty=c(1,2))
+```
