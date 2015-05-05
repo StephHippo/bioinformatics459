@@ -1,4 +1,6 @@
 library(glmnet)
+library(rms)
+library(survcomp)
 
 clinical_expr_integration <- read.csv("~/Documents/EECS459/bioinformatics459/clinical_expr_integration.csv", header=TRUE)
 clin_expr_data_time <- read.csv("~/Documents/EECS459/bioinformatics459/clin_expr_data_time.csv", header=TRUE)
@@ -71,10 +73,10 @@ plot(cv_nostd_cox)
 cv_nostd_cox_s <- cv_nostd_cox$lambda.min
 
 # Get most important features
-coef(cv_nostd_cox, s = "lambda.min")
+coef <- coef(cv_nostd_cox, s = "lambda.min")
 
 # Run prediction on the cross-validated model
-predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
+pred_val = predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
 
 c_index = concordance.index(pred_val, surv.time = y_test$time, surv.event=y_test$status, method="noether")
 

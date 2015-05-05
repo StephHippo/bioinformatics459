@@ -64,7 +64,7 @@ coef = coef(cv_nostd_cox, s = "lambda.min")
 as.matrix(coef)
 
 # Run prediction on the cross-validated model
-predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
+pred_val = predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
 
 # Plot the Cross Validation
 plot(cv_nostd_cox)
