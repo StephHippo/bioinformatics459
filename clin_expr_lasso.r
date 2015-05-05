@@ -26,38 +26,52 @@ clinical_expr_integration$bcr_omf_uuid <- NULL
 # Ignore outcome columns from predictors
 clinical_expr_integration$vital_status <- NULL 
 
-# attach(clinical_expr_integration)
-set.seed(459)
-test.rows <- sample(1:nrow(clinical_expr_integration), size=82, replace=FALSE)
-train <- clinical_expr_integration[-test.rows,]
-test <- clinical_expr_integration[test.rows,]
+#for(i in 1:50){
+  # Split patient data into test and train
+  # set.seed(459)
+  test.rows <- sample(1:nrow(clinical_expr_integration), size=82, replace=FALSE)
+  train <- clinical_expr_integration[-test.rows,]
+  test <- clinical_expr_integration[test.rows,]
 
-# Organizing training data into x_train and y_train
-x_train <- train
-x_train$time <- NULL
-x_train$status <- NULL
-y_train <- data.frame(matrix(ncol=2, nrow=327))
-colnames(y_train) <- c("time", "status")
-y_train$time <- train$time + 1
-y_train$status <- as.numeric(train$status)
+  # Organizing training data into x_train and y_train
+  x_train <- train
+  x_train$time <- NULL
+  x_train$status <- NULL
+  y_train <- data.frame(matrix(ncol=2, nrow=327))
+  colnames(y_train) <- c("time", "status")
+  y_train$time <- train$time + 1
+  y_train$status <- as.numeric(train$status)
 
-# Organizing testing data into x_test and y_test
-x_test <- test
-x_test$time <- NULL
-x_test$status <- NULL
-y_test <- data.frame(matrix(ncol=2, nrow=82))
-colnames(y_test) <- c("time", "status")
-y_test$time <- test$time + 1
-y_test$status <- as.numeric(test$status)
+  # Organizing testing data into x_test and y_test
+  x_test <- test
+  x_test$time <- NULL
+  x_test$status <- NULL
+  y_test <- data.frame(matrix(ncol=2, nrow=82))
+  colnames(y_test) <- c("time", "status")
+  y_test$time <- test$time + 1
+  y_test$status <- as.numeric(test$status)
 
+  # Create model object and Cross Validation objects
+  fit_nostd_cox = glmnet(data.matrix(x_train), data.matrix(y_train), standardize=FALSE, family="cox")
+  cv_nostd_cox = cv.glmnet(data.matrix(x_train), data.matrix(y_train), standardize=FALSE, family="cox")
 
+  # find lambda index for the models with least partial likelihood deviance (by cv.glmnet) 
+  cv_nostd_cox_s <- cv_nostd_cox$lambda.min
 
-fit_nostd_cox = glmnet(data.matrix(x_train), data.matrix(y_train), standardize=FALSE, family="cox")
-#summary(x_train)
-#summary(y_train)
-#summary(x_test)
-#summary(y_train)
+  # Get most important features
+  coef(cv_nostd_cox, s = "lambda.min")
 
+  # Run prediction on the cross-validated model
+  predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
+#}
+
+# Plot the 
+plot(fit_nostd_cox)
+
+# Plot the Cross Validation
+plot(cv_nostd_cox)
+
+# Start outputting for results
 # sink('clinical_expr_lasso.txt')
 
 # Perform feature selection and model generation
