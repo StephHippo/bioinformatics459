@@ -74,13 +74,4 @@ plot(fit_nostd_cox)
 # Plot the Cross Validation
 plot(cv_nostd_cox)
 
-# Start outputting for results
-# sink('clinical_expr_lasso.txt')
-
-# Perform feature selection and model generation
-
-
-# Close output
-# sink()
-
-# Generate our graphs
+c_index = concordance.index(pred_val, surv.time = y_test$time, surv.event=y_test$status, method="noether")

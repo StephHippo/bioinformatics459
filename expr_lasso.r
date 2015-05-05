@@ -30,7 +30,7 @@ clinical_expr_integration$vital_status <- NULL
 expr_x <- clinical_expr_integration[23:169]
 
 # Split patient data into test and train
-set.seed(459)
+#set.seed(459)
 test.rows <- sample(1:nrow(clin_x), size=82, replace=FALSE)
 train <- expr_x[-test.rows,]
 test <- expr_x[test.rows,]
@@ -64,12 +64,17 @@ plot(cv_nostd_cox)
 cv_nostd_cox_s <- cv_nostd_cox$lambda.min
 
 # Get most important features
-coef(cv_nostd_cox, s = "lambda.min")
+coef.min = coef(cv_nostd_cox, s = cv_nostd_cox_s)
+active.min = which(coef.min!=0)
+index.min = coef.min[active.min]
+
+# Show relevant coefficients
+coef.min
 
 # Run prediction on the cross-validated model
-predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
+pred_val = predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
 
-# TODO: C-index for model
+c_index = concordance.index(pred_val, surv.time = y_test$time, surv.event=y_test$status, method="noether")
 
 # Start outputting for results
 # sink('clinical_expr_lasso.txt')

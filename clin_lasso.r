@@ -35,7 +35,6 @@ clin_x$malignancy_type <- clinical_expr_integration$malignancy_type
 clin_x$radiation_tx_indicator <- clinical_expr_integration$radiation_tx_indicator
 
 # Split patient data into test and train
-set.seed(459)
 test.rows <- sample(1:nrow(clin_x), size=82, replace=FALSE)
 train <- clin_x[-test.rows,]
 test <- clin_x[test.rows,]
@@ -77,15 +76,4 @@ coef(cv_nostd_cox, s = "lambda.min")
 # Run prediction on the cross-validated model
 predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
 
-# TODO: C-index for model
-
-# Start outputting for results
-# sink('clinical_expr_lasso.txt')
-
-# Perform feature selection and model generation
-
-
-# Close output
-# sink()
-
-# Generate our graphs
+c_index = concordance.index(pred_val, surv.time = y_test$time, surv.event=y_test$status, method="noether")
