@@ -1,6 +1,6 @@
 library(glmnet)
 library(rms)
-library(survival)
+library(survcomp)
 
 clinical_expr_integration <- read.csv("~/Documents/EECS459/bioinformatics459/clinical_expr_integration.csv", header=TRUE)
 clin_expr_data_time <- read.csv("~/Documents/EECS459/bioinformatics459/clin_expr_data_time.csv", header=TRUE)

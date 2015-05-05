@@ -1,4 +1,6 @@
 library(glmnet)
+library(rms)
+library(survcomp)
 
 clinical_expr_integration <- read.csv("~/Documents/EECS459/bioinformatics459/clinical_expr_integration.csv", header=TRUE)
 clin_expr_data_time <- read.csv("~/Documents/EECS459/bioinformatics459/clin_expr_data_time.csv", header=TRUE)
@@ -31,7 +33,7 @@ expr_x <- clinical_expr_integration[23:169]
 
 # Split patient data into test and train
 #set.seed(459)
-test.rows <- sample(1:nrow(clin_x), size=82, replace=FALSE)
+test.rows <- sample(1:nrow(expr_x), size=82, replace=FALSE)
 train <- expr_x[-test.rows,]
 test <- expr_x[test.rows,]
 
@@ -64,12 +66,7 @@ plot(cv_nostd_cox)
 cv_nostd_cox_s <- cv_nostd_cox$lambda.min
 
 # Get most important features
-coef.min = coef(cv_nostd_cox, s = cv_nostd_cox_s)
-active.min = which(coef.min!=0)
-index.min = coef.min[active.min]
-
-# Show relevant coefficients
-coef.min
+coef = coef(cv_nostd_cox, s = cv_nostd_cox_s)
 
 # Run prediction on the cross-validated model
 pred_val = predict(cv_nostd_cox, data.matrix(x_test), s=cv_nostd_cox_s, type="link")
