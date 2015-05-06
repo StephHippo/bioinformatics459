@@ -1,0 +1,19 @@
+---
+title: "lasso"
+author: "Tian He"
+date: "Tuesday, May 05, 2015"
+output: html_document
+---
+```{r setup}
+setwd("C:/Users/Tian/Desktop/459 Final/R")
+brc <- read.csv("C:/Users/Tian/Desktop/459 Final/R/lasso.csv")
+
+attach(lasso)
+```
+
+
+```{r compare}
+boxplot(Cindex ~ Data, main="C index for three kinds of models", col=c("red", "yellow", "blue"), y="C index")
+
+detach(lasso)
+```

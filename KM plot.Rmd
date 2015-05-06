@@ -1,0 +1,49 @@
+---
+title: "K-M plot"
+author: "Tian He"
+date: "Tuesday, May 05, 2015"
+output: html_document
+---
+```{r setup}
+setwd("C:/Users/Tian/Desktop/459 Final/R")
+brc <- read.csv("C:/Users/Tian/Desktop/459 Final/R/brc.csv")
+
+attach(brc)
+```
+
+```{r plot}
+library(survival)
+
+status <- as.factor(vital_status)
+surv <-Surv(time, status=="Dead")
+
+Paxillin
+summary(Paxillin)
+
+Paxillin <- ifelse(Paxillin>0, 1, -1)
+Paxillin
+summary(Paxillin)
+
+fit <- survfit(surv ~ Paxillin)
+print(fit, print.rmean=TRUE)
+fit
+plot(fit, ylab="Survival Probability", xlab="Follow-up Time", main="Kaplan-Meier plot for Paxillin", col=c(1,2), lty=c(1,2))
+legend("bottomleft", legend=c("Down", "Up"), text.col=c(1,2), col=c(1,2), lty=c(1,2))
+```
+
+```{r plot2}
+age_at_diagnosis
+summary(age_at_diagnosis)
+
+age <- ifelse(age_at_diagnosis>55, 2, 0)
+
+fit2 <- survfit(surv ~ age)
+print(fit2, print.rmean=TRUE)
+fit2
+plot(fit2, ylab="Survival Probability", xlab="Follow-up Time", main="Kaplan-Meier plot for diagnosis age", col=c(1,2), lty=c(1,2))
+legend("bottomleft", legend=c("age<55", "age>55"), text.col=c(1,2), col=c(1,2), lty=c(1,2))
+```
+
+```{r finish}
+detach(brc)
+```
