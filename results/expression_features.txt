@@ -1,0 +1,15 @@
+Claudin.7:7
+EGFR_pY1068:4
+ER.alpha:8
+GSK3.alpha.beta_pS21_S9:9
+HER2:2
+IGFBP2:7
+NF.kB.p65_pS536:10
+VEGFR2:3
+Rb_pS807_S811:4
+MAPK_pT202_Y204:3
+Cyclin_B1:1
+HER2_pY1248:1
+MEK1:1
+PTEN:1
+Tuberin:1

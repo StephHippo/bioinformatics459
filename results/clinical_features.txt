@@ -1,0 +1,11 @@
+anatomic_neoplasm_subdivision:3
+prospective_collection:10
+initial_pathologic_dx_year:10
+age_at_diagnosis:10
+ajcc_tumor_pathologic_pt:10
+ajcc_nodes_pathologic_pn:10
+histologic_diagnosis:3
+ajcc_metastasis_pathologic_pm:1
+pr_status_by_ihc:1
+icd_o_3_histology:1
+malignancy_type:1
